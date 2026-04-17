@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird - Isaac Hodgson</title>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin: 24px 0 8px;
+            font-size: 2.2rem;
+            color: #e94560;
+            letter-spacing: 2px;
+            font-family: 'Lora', serif;
+        }
+        .instructions {
+            color: #a8dadc;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            font-family: 'Open Sans', sans-serif;
+        }
+        canvas {
+            border: 3px solid #e94560;
+            border-radius: 8px;
+            display: block;
+            cursor: pointer;
+        }
+        #score-display {
+            margin-top: 14px;
+            font-size: 1.1rem;
+            color: #a8dadc;
+            font-family: 'Open Sans', sans-serif;
+        }
+        #high-score-display {
+            font-size: 1rem;
+            color: #e94560;
+            margin-top: 4px;
+            font-family: 'Open Sans', sans-serif;
+        }
+        #message {
+            margin-top: 12px;
+            font-size: 1rem;
+            color: #ffffff;
+            min-height: 24px;
+            margin-bottom: 40px;
+            font-family: 'Open Sans', sans-serif;
+        }
+    </style>
+</head>
+<body>
+ 
+    <!-- Bootstrap Navbar (matches rest of site) -->
+    <nav class="navbar navbar-expand-lg navbar-light" id="mainNav" style="width:100%;">
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="index.html">Isaac Hodgson</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                Menu <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">Resume</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="fromscratch.html">Weightlifting</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="aigame.html">Game</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+ 
+    <h1>🐦 Flappy Bird</h1>
+    <p class="instructions">Press <strong>Space</strong>, click, or tap the canvas to flap!</p>
+ 
+    <canvas id="gameCanvas" width="400" height="550"></canvas>
+    <div id="score-display">Score: 0</div>
+    <div id="high-score-display">Best: 0</div>
+    <div id="message">Click the canvas or press Space to start</div>
+ 
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score-display');
+        const highScoreDisplay = document.getElementById('high-score-display');
+        const message = document.getElementById('message');
+ 
+        let gameState = 'idle';
+        let score = 0;
+        let highScore = 0;
+        let animFrame;
+ 
+        const bird = { x: 80, y: 200, r: 18, vy: 0, gravity: 0.45, flapStrength: -8 };
+        const PIPE_WIDTH = 60, PIPE_GAP = 155, PIPE_SPEED = 2.8;
+        let pipes = [], frameCount = 0;
+ 
+        function resetGame() {
+            bird.y = 200; bird.vy = 0; pipes = []; score = 0; frameCount = 0;
+            scoreDisplay.textContent = 'Score: 0';
+        }
+ 
+        function flap() {
+            if (gameState === 'idle') {
+                gameState = 'playing'; message.textContent = '';
+                resetGame(); bird.vy = bird.flapStrength; loop();
+            } else if (gameState === 'playing') {
+                bird.vy = bird.flapStrength;
+            } else if (gameState === 'dead') {
+                gameState = 'idle';
+                message.textContent = 'Click the canvas or press Space to start';
+            }
+        }
+ 
+        canvas.addEventListener('click', flap);
+        document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); flap(); } });
+ 
+        function spawnPipe() {
+            const topHeight = Math.floor(Math.random() * (canvas.height - PIPE_GAP - 120) + 60);
+            pipes.push({ x: canvas.width, topHeight, passed: false });
+        }
+ 
+        function drawBackground() {
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#87ceeb'); grad.addColorStop(1, '#d4f5ff');
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#5c8a3c'; ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+            ctx.fillStyle = '#7ab648'; ctx.fillRect(0, canvas.height - 40, canvas.width, 10);
+        }
+ 
+        function drawBird() {
+            ctx.save(); ctx.translate(bird.x, bird.y);
+            ctx.rotate(Math.min(Math.max(bird.vy * 0.05, -0.4), 1.2));
+            ctx.beginPath(); ctx.arc(0, 0, bird.r, 0, Math.PI * 2);
+            ctx.fillStyle = '#f7c948'; ctx.fill();
+            ctx.strokeStyle = '#d4a017'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(-4, 4, 10, 5, -0.3, 0, Math.PI * 2);
+            ctx.fillStyle = '#e8b400'; ctx.fill();
+            ctx.beginPath(); ctx.arc(8, -5, 5, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+            ctx.beginPath(); ctx.arc(9, -5, 2.5, 0, Math.PI * 2); ctx.fillStyle = '#222'; ctx.fill();
+            ctx.beginPath(); ctx.moveTo(14, 0); ctx.lineTo(22, -3); ctx.lineTo(22, 3);
+            ctx.closePath(); ctx.fillStyle = '#ff8c00'; ctx.fill();
+            ctx.restore();
+        }
+ 
+        function drawPipes() {
+            pipes.forEach(p => {
+                ctx.fillStyle = '#4caf50'; ctx.fillRect(p.x, 0, PIPE_WIDTH, p.topHeight);
+                ctx.fillStyle = '#388e3c'; ctx.fillRect(p.x - 5, p.topHeight - 24, PIPE_WIDTH + 10, 24);
+                const bY = p.topHeight + PIPE_GAP;
+                ctx.fillStyle = '#4caf50'; ctx.fillRect(p.x, bY, PIPE_WIDTH, canvas.height - bY - 40);
+                ctx.fillStyle = '#388e3c'; ctx.fillRect(p.x - 5, bY, PIPE_WIDTH + 10, 24);
+            });
+        }
+ 
+        function drawScore() {
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 28px Segoe UI';
+            ctx.textAlign = 'center'; ctx.fillText(score, canvas.width / 2, 50);
+        }
+ 
+        function drawDeadScreen() {
+            ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 36px Segoe UI'; ctx.textAlign = 'center';
+            ctx.fillText('Game Over!', canvas.width / 2, 220);
+            ctx.font = '22px Segoe UI'; ctx.fillText('Score: ' + score, canvas.width / 2, 265);
+            ctx.fillStyle = '#f7c948'; ctx.fillText('Best: ' + highScore, canvas.width / 2, 300);
+            ctx.fillStyle = '#a8dadc'; ctx.font = '18px Segoe UI';
+            ctx.fillText('Click or Space to restart', canvas.width / 2, 345);
+        }
+ 
+        function drawIdleScreen() {
+            drawBackground(); drawBird();
+            ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f7c948'; ctx.font = 'bold 40px Segoe UI'; ctx.textAlign = 'center';
+            ctx.fillText('🐦 Flappy Bird', canvas.width / 2, 220);
+            ctx.fillStyle = '#ffffff'; ctx.font = '20px Segoe UI';
+            ctx.fillText('Click or press Space to play', canvas.width / 2, 270);
+        }
+ 
+        function checkCollision(p) {
+            if (bird.x + bird.r - 2 > p.x && bird.x - bird.r + 2 < p.x + PIPE_WIDTH) {
+                if (bird.y - bird.r + 2 < p.topHeight || bird.y + bird.r - 2 > p.topHeight + PIPE_GAP) return true;
+            }
+            return false;
+        }
+ 
+        function loop() {
+            if (gameState !== 'playing') return;
+            bird.vy += bird.gravity; bird.y += bird.vy;
+            if (++frameCount % 90 === 0) spawnPipe();
+            pipes.forEach(p => p.x -= PIPE_SPEED);
+            pipes = pipes.filter(p => p.x + PIPE_WIDTH > 0);
+            pipes.forEach(p => { if (!p.passed && p.x + PIPE_WIDTH < bird.x) { p.passed = true; score++; scoreDisplay.textContent = 'Score: ' + score; } });
+            if (bird.y + bird.r > canvas.height - 40 || bird.y - bird.r < 0) { die(); return; }
+            for (let p of pipes) { if (checkCollision(p)) { die(); return; } }
+            drawBackground(); drawPipes(); drawBird(); drawScore();
+            animFrame = requestAnimationFrame(loop);
+        }
+ 
+        function die() {
+            gameState = 'dead';
+            if (score > highScore) { highScore = score; highScoreDisplay.textContent = 'Best: ' + highScore; }
+            cancelAnimationFrame(animFrame);
+            drawBackground(); drawPipes(); drawBird(); drawDeadScreen();
+            message.textContent = 'Click or press Space to play again';
+        }
+ 
+        drawIdleScreen();
+    </script>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>

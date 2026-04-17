@@ -1,0 +1,213 @@
+body {
+    background-color: whitesmoke;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+}
+ 
+/* =====================
+   2. HEADER / HERO
+   ===================== */
+.scratch-header {
+    background-color: #0f3460;
+    text-align: center;
+    padding: 60px 20px 40px;
+    font-family: 'Georgia', serif;
+    border-bottom: 4px solid #e94560;
+}
+ 
+.scratch-header h1 {
+    color: #ffffff;
+    font-size: 3.5rem;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+}
+ 
+.scratch-tagline {
+    color: #dde3e3;
+    font-size: 1.2rem;
+    font-family: 'Segoe UI', sans-serif;
+}
+ 
+/* =====================
+   3. ANCHOR NAVIGATION
+   ===================== */
+.anchor-nav {
+    background-color: #e6e7ec;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 14px;
+    flex-wrap: wrap;
+}
+ 
+.anchor-nav a {
+    color: #3cb6ba;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.95rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+ 
+.anchor-nav a:hover {
+    color: #ebe5e6;
+}
+ 
+/* =====================
+   4. MAIN CONTAINER (div)
+   ===================== */
+.scratch-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+ 
+/* =====================
+   5. SECTIONS (div)
+   ===================== */
+.scratch-section {
+    background-color: #16213e;
+    border-radius: 10px;
+    padding: 32px;
+    margin-bottom: 36px;
+    
+}
+ 
+.scratch-section h2 {
+    color: #e94560;
+    font-family: 'Georgia', serif;
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+}
+ 
+.scratch-section h3 {
+    color: #a8dadc;
+    font-family: 'Segoe UI', sans-serif;
+}
+ 
+.scratch-section p {
+    color: #d0d0d0;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.8;
+}
+ 
+/* =====================
+   6. IMAGES
+   ===================== */
+.scratch-img {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 8px;
+    margin-top: 16px;
+    display: block;
+}
+ 
+/* =====================
+   7. LISTS
+   ===================== */
+.main-list {
+    color: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 2;
+    padding-left: 20px;
+}
+ 
+.sub-list {
+    color: #a8dadc;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.9;
+    margin-top: 6px;
+}
+ 
+/* =====================
+   8. EXERCISE CARDS (div grid)
+   ===================== */
+.exercise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+ 
+.exercise-card {
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e94560;
+}
+ 
+.exercise-card h3 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+ 
+.exercise-card p {
+    color: #a8dadc;
+    font-size: 0.9rem;
+}
+ 
+/* =====================
+   9. VIDEO EMBED
+   ===================== */
+.video-wrapper {
+    margin-top: 16px;
+    text-align: center;
+}
+ 
+.video-wrapper iframe {
+    max-width: 100%;
+    border-radius: 8px;
+}
+ 
+/* =====================
+   10. TABLEAU WRAPPER (div)
+   ===================== */
+.tableau-wrapper {
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+ 
+/* =====================
+   11. BACK TO TOP
+   ===================== */
+.back-to-top {
+    text-align: center;
+    margin: 30px 0;
+}
+ 
+.back-to-top a {
+    color: #e94560;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1rem;
+    text-decoration: none;
+}
+ 
+.back-to-top a:hover {
+    text-decoration: underline;
+}
+ 
+/* =====================
+   12. FOOTER
+   ===================== */
+.scratch-footer {
+    background-color: #0f3460;
+    text-align: center;
+    padding: 24px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #a8dadc;
+    font-size: 0.9rem;
+    border-top: 3px solid #e94560;
+}
+ 
+.scratch-footer a {
+    color: #e94560;
+    text-decoration: none;
+}
+ 
+.scratch-footer a:hover {
+    text-decoration: underline;
+}
